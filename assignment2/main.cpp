@@ -27,8 +27,23 @@ std::string kYourName = "Zeyang Lin"; // Don't forget to change this!
  * below it) to use a `std::unordered_set` instead. If you do so, make sure
  * to also change the corresponding functions in `utils.h`.
  */
-std::set<std::string> get_applicants(std::string filename) {
+std::unordered_set<std::string> get_applicants(std::string filename) {
   // STUDENT TODO: Implement this function.
+  std::ifstream ifs(filename);
+
+  std::unordered_set<std::string> students;
+  if (ifs.is_open()) {
+    std::string name;
+    while (getline(ifs, name), !name.empty())
+      students.insert(name);
+  }
+
+  return students;
+}
+
+std::pair<char, char> get_initials(const std::string& name) {
+  int pos = name.find(' '); 
+  return {name[0], name[pos + 1]};
 }
 
 /**
@@ -39,8 +54,17 @@ std::set<std::string> get_applicants(std::string filename) {
  * @param students  The set of student names.
  * @return          A queue containing pointers to each matching name.
  */
-std::queue<const std::string*> find_matches(std::string name, std::set<std::string>& students) {
+std::queue<const std::string*> find_matches(std::string name, std::unordered_set<std::string>& students) {
   // STUDENT TODO: Implement this function.
+  std::pair<char, char> myInitial = get_initials(kYourName);
+  std::queue<const std::string*> matches;
+  for (const auto& name : students) {
+    auto nameInitial = get_initials(name);
+    if (nameInitial == myInitial) {
+      matches.push(&name);
+    }
+  }
+  return matches;
 }
 
 /**
@@ -55,6 +79,11 @@ std::queue<const std::string*> find_matches(std::string name, std::set<std::stri
  */
 std::string get_match(std::queue<const std::string*>& matches) {
   // STUDENT TODO: Implement this function.
+  if (matches.empty()) {
+    return "NO MATCHES FOUND.";
+  }
+  std::string match = *matches.front();
+  return match;
 }
 
 /* #### Please don't remove this line! #### */
